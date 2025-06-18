@@ -5,7 +5,8 @@ function App() {
 
   return (
     <div>
-      <h1>Data Structures Quiz!</h1>
+      <h2>Data Structures Basics</h2>
+      <h4>Number of Cards: 10</h4>
       <FlashcardList />
     </div>
   );
