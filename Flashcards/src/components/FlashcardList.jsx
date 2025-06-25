@@ -1,8 +1,9 @@
 import React from "react";
 import Flashcard from "./Flashcard";
-import { useState } from "react";
+import Guessing from "./Guessing";
+import { useState, useEffect } from "react";
 
-const FlashcardList = () => {
+const FlashcardList = ( { handleStreak }) => {
     const flashcardList = [
         { question: "Which data structure implements First In First Out?", answer: "Queue", color: "rgba(255, 182, 193, 0.5)" },       
         { question: "Which data structure implements First In Last Out?", answer: "Stack", color: "rgba(176, 224, 230, 0.5)" },    
@@ -16,21 +17,54 @@ const FlashcardList = () => {
         { question: "Which list allows backward traversal?", answer: "Doubly Linked List", color: "rgba(240, 248, 255, 0.5)" }  
     ];
 
-    let [index, setIndex] = useState(0);
+    const [index, setIndex] = useState(0);
+    const [answerShowing, setAnswerShowing] = useState(false);
+    const [inputValue, setInputValue] = useState("");
 
-    // modulo wrap-around behavior
-    const handleButton = () => {
-        setIndex(
-            index = (index + 1) % 10
-        );
+    const handleButton = (direction) => {
+        if ((index == 0 && direction == "prev") || (index == 9 && direction == "next")) {
+            return;
+        }
+        setIndex((index) => (direction == "next" ? index + 1 : index - 1));
     };
+
+    useEffect(() => {
+        clearValue();
+        setAnswerShowing(false);
+    }, [index]);
+      
+
+    const toggleAnswer = () => setAnswerShowing((prev) => !prev);
+    const clearValue = () => setInputValue("");
 
     return (
         <div>
-            <Flashcard question={flashcardList[index].question} answer={flashcardList[index].answer} color={flashcardList[index].color}/>
-            <button className="nextCard" onClick={handleButton}>
+            <Flashcard 
+                question={flashcardList[index].question} 
+                answer={flashcardList[index].answer} 
+                color={flashcardList[index].color}
+                answerShowing={answerShowing}
+                toggleAnswer={toggleAnswer}
+            />
+            <button 
+                onClick={() => handleButton("prev")}
+                className={(index == 0) ? "disabled" : "enabled"}
+            >
+                ←
+            </button> 
+            <button 
+                onClick={() => handleButton("next")} 
+                className={(index == 9) ? "disabled" : "enabled"}
+            >
                 →
             </button> 
+            <Guessing 
+                answer={flashcardList[index].answer.toLowerCase()}
+                answerShowing={answerShowing}
+                inputValue={inputValue}
+                setInputValue={setInputValue}
+                handleStreak={handleStreak}
+            />
         </div>
         
     );
